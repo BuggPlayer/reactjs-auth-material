@@ -9,17 +9,58 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const Logindata = () => {
-    console.log("email", email);
-    console.log("pass", password);
+  const [errormsg, seterrormsg] = useState("");
+  const [errorpassword, seterrorpassword] = useState("");
 
-    axios
-      .post("http://localhost:4000/login", { email, password: password })
-      .then((res) => {
-        console.log("res", res);
-        history.push("/home");
-      })
-      .catch((err) => console.log("err", err));
+  const emailValidation = (email) => {
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+    if (re.test(email)) {
+      setEmail(email);
+      seterrormsg("");
+    } else {
+      seterrormsg("Please Enter a valid email");
+    }
+    if (email.trim() === "") {
+      seterrormsg("Email is required");
+    }
+  };
+
+  const passwordvalidatation = (password) => {
+    if (password === "") {
+      seterrorpassword("password is required!");
+    }
+  };
+
+  const emailHandler = (e) => {
+    emailValidation(e.target.value);
+  };
+
+  const Logindata = () => {
+    if (password === "" && email === "") {
+      alert("all fileds are required");
+    } else {
+      axios
+        .post(`http://localhost:4000/login`, { email, password: password })
+        .then((res) => {
+    
+            console.log("res", res);
+            history.push("/home");
+    
+        })
+        .catch((err) => console.error("eror", err));
+    }
+
+    // console.log("email", email);
+    // console.log("pass", password);
+
+    // axios
+    //   .post("http://localhost:4000/login", { email, password: password })
+    //   .then((res) => {
+    //     console.log("res", res);
+    //     history.push("/home");
+    //   })
+    //   .catch((err) => console.log("err", err));
   };
   return (
     <div>
@@ -44,22 +85,23 @@ const Login = () => {
             <h1 style={{ lineHeight: "24px", color: "#F6F6FE" }}>Hello,</h1>
             <h1 style={{ color: "#F6F6FE" }}>Welcome again!!</h1>
 
-            <div style={{ marginTop: "5%", marginBottom: "5%" }}>
-              <TextField
-                style={{
-                  width: "370px",
-                  backgroundColor: "white",
-                  borderRadius: "5px",
-                }}
-                variant="outlined"
-                placeholder="enter email"
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
+            <TextField
+              variant="outlined"
+              placeholder="email"
+              style={{
+                marginLeft: "10%",
+                backgroundColor: "white",
+                width: "370px",
+                color: "white",
+                marginBottom: "4%",
+                borderRadius: "10px",
+              }}
+              onChange={emailHandler}
+            />
+            <p style={{ color: "red" }}>{errormsg}</p>
 
             <div>
               <TextField
-
                 style={{
                   width: "370px",
                   backgroundColor: "white",

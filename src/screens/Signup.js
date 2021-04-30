@@ -13,27 +13,69 @@ import axios from "axios";
 
 const Signup = () => {
   const [firstname, setFirstname] = useState("");
-
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  // validation state
+  const [errorfn, seterrorfn] = useState("");
+  const [errormsg, seterrormsg] = useState("");
+  const [errorphone, seterrorphone] = useState("");
+  const [errorpassword, seterrorpassword] = useState("");
+
+  const emailValidation = (email) => {
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+    if (re.test(email)) {
+      setEmail(email);
+      seterrormsg("");
+    } else {
+      seterrormsg("Please Enter a valid email");
+    }
+    if (email.trim() === "") {
+      seterrormsg("Email is required");
+    }
+  };
+
+  const phoneValidation = (number) => {
+    console.log(number);
+    const pat = new RegExp(/^[0-9\b]+$/);
+    if (!pat.test(number)) {
+      seterrorphone("Enter Only Number!");
+    } else if (number.length != 10) {
+      seterrorphone("Please Enter a valid phone number");
+    } else {
+      seterrorphone("");
+    }
+  };
+
+  const emailHandler = (e) => {
+    emailValidation(e.target.value);
+  };
+
+  const passwordvalidatation = (password) => {
+    if (password === "") {
+      seterrorpassword("password is required!");
+    }
+  };
 
   const submitData = () => {
+    if (firstname === "" && password === "" && email === "" && phone == "") {
+      alert("all fileds are required");
+    } else {
+      axios
+        .post(`http://localhost:4000/register`, {
+          name: firstname,
+          email,
+          phone,
+          password: password,
+        })
+        .then((res) => console.log("res", res.data))
+        .catch((err) => console.error("eror", err));
+    }
     console.log("fn", firstname);
-
     console.log("fn", email);
     console.log("fn", phone);
     console.log("fn", password);
-
-    axios
-      .post(`http://localhost:4000/register`, {
-        name: firstname,
-        email,
-        phone,
-        password: password,
-      })
-      .then((res) => console.log("res", res.data))
-      .catch((err) => console.error("eror", err));
   };
 
   return (
@@ -52,8 +94,6 @@ const Signup = () => {
           }}
         >
           <Container>
-            {/* <Card style={{marginTop:"6%", width:"85%", }}>
-            <CardContent> */}
             <div style={{ marginTop: "5%", paddingLeft: "7%" }}>
               <h1
                 style={{
@@ -94,8 +134,9 @@ const Signup = () => {
                   marginBottom: "4%",
                   borderRadius: "10px",
                 }}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={emailHandler}
               />
+              <p style={{ color: "red" }}>{errormsg}</p>
 
               <TextField
                 variant="outlined"
@@ -108,9 +149,11 @@ const Signup = () => {
                   marginBottom: "4%",
                   borderRadius: "10px",
                 }}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  passwordvalidatation(e.target.value);
+                }}
               />
-
+              <p style={{ color: "red" }}>{errorpassword}</p>
               <TextField
                 variant="outlined"
                 placeholder="phone"
@@ -122,8 +165,11 @@ const Signup = () => {
                   marginBottom: "4%",
                   borderRadius: "10px",
                 }}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={(e) => {
+                  phoneValidation(e.target.value);
+                }}
               />
+              <p style={{ color: "red" }}>{errorphone}</p>
 
               <Button
                 style={{
